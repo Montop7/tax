@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country Picker Form</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Bootstrap Select CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+  <!-- Flag Icon CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+  <style>
+   .form-section {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .form-section h4 {
+      margin-bottom: 15px;
+    }
+    .btn-country {
+      background-color: #ffffff;
+      border: 1px solid #dddddd;
+      color: #333333;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      position: relative;
+      transition: background-color 0.3s, color 0.3s;
+      border-radius: 4px;
+      align-items:center; /* Center contents vertically */
+      justify-content: space-between; /* Space between content and checkmark/crossmark */
+      padding-right: 10px; /* Space for checkmark/crossmark */
+    }
+    .btn-country img {
+      margin-right: 8px;
+    }
+    .btn-country:hover {
+      background-color: #e9ecef;
+      border-color: #cccccc;
+    }
+    .btn-country.active {
+      background-color: #ff80ab; /* Changed active background color */
+      color: #ffffff;
+      border-color: #ff80ab;
+      box-shadow: 0 0 0 2px rgba(255, 128, 171, 0.5); /* Added box-shadow for selected */
+    }
+    .checkmark, .crossmark {
+      display: none;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .btn-country.active .checkmark {
+      display: inline-block;
+      color: green;
+      margin-left: 5px; /* Adjust spacing */
+    }
+    .btn-country.active .crossmark {
+      display: inline-block;
+      color: red;
+      margin-left: 5px; /* Adjust spacing */
+    }
+    .selectpicker {
+      border-color: #dddddd;
+      border-radius: 4px; /* Added border-radius for dropdown */
+    }
+    .selectpicker:focus {
+      border-color: #ff80ab; /* Changed focus border color */
+      box-shadow: 0 0 0 2px rgba(255, 128, 171, 0.5); /* Added box-shadow for focus */
+    }
+    .button {
+      background-color: maroon;
+      color: white;
+      height: 40px;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <form>
+          <div class="form-section">
+            <h4>08 Your nationality/citizenship</h4>
+            <p>What's your country of nationality/citizenship?</p>
+            <div>
+              <button type="button" class="btn btn-country" data-country="United Kingdom" data-section="nationality">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/gb.svg" alt="UK Flag" width="20" height="15"> United Kingdom
+                <span class="checkmark">&#10003;</span>
+                <span class="crossmark">&#10007;</span>
+              </button>
+              <button type="button" class="btn btn-country" data-country="United States" data-section="nationality">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg" alt="US Flag" width="20" height="15"> United States
+                <span class="checkmark">&#10003;</span>
+                <span class="crossmark">&#10007;</span>
+              </button>
+              <select class="selectpicker" id="other-countries" data-section="nationality" data-live-search="true" title="Other">
+                <!-- Options will be added by JavaScript -->
+              </select>
+            </div>
+            <div id="selected-nationality" class="mt-3"></div>
+          </div>
+          
+          <div class="form-section">
+            <h4>09 Your tax details</h4>
+            <p>In which country are you a tax resident?</p>
+            <div>
+              <button type="button" class="btn btn-country" data-country="United Kingdom" data-section="tax">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/gb.svg" alt="UK Flag" width="20" height="15"> United Kingdom
+                <span class="checkmark">&#10003;</span>
+                <span class="crossmark">&#10007;</span>
+              </button>
+              <button type="button" class="btn btn-country" data-country="United States" data-section="tax">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg" alt="US Flag" width="20" height="15"> United States
+                <span class="checkmark">&#10003;</span>
+                <span class="crossmark">&#10007;</span>
+              </button>
+              <select class="selectpicker" id="tax-other-countries" data-section="tax" data-live-search="true" title="Other">
+                <!-- Options will be added by JavaScript -->
+              </select>
+            </div>
+            <div id="selected-tax-residency" class="mt-3"></div>
+          </div>
+          
+          <button type="button" class="button" onclick="displaySelections()">Continue</button>
+        </form>
+      </div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Bootstrap Select JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    const countries = [
+      { code: 'af', name: 'Afghanistan' },
+      { code: 'al', name: 'Albania' },
+      { code: 'dz', name: 'Algeria' },
+      { code: 'as', name: 'American Samoa' },
+      { code: 'ad', name: 'Andorra' },
+      { code: 'ao', name: 'Angola' },
+      { code: 'ai', name: 'Anguilla' },
+      { code: 'ag', name: 'Antigua and Barbuda' },
+      { code: 'ar', name: 'Argentina' },
+      { code: 'am', name: 'Armenia' },
+      { code: 'aw', name: 'Aruba' },
+      { code: 'au', name: 'Australia' },
+      { code: 'at', name: 'Austria' },
+      { code: 'az', name: 'Azerbaijan' },
+      { code: 'bs', name: 'Bahamas' },
+      { code: 'bh', name: 'Bahrain' },
+      { code: 'bd', name: 'Bangladesh' },
+      { code: 'bb', name: 'Barbados' },
+      { code: 'by', name: 'Belarus' },
+      { code: 'be', name: 'Belgium' },
+      { code: 'bz', name: 'Belize' },
+      { code: 'bj', name: 'Benin' },
+      { code: 'bm', name: 'Bermuda' },
+      { code: 'bt', name: 'Bhutan' },
+      { code: 'bo', name: 'Bolivia' },
+      { code: 'ba', name: 'Bosnia and Herzegovina' },
+      { code: 'bw', name: 'Botswana' },
+      { code: 'br', name: 'Brazil' },
+      { code: 'bn', name: 'Brunei' },
+      { code: 'bg', name: 'Bulgaria' },
+      { code: 'bf', name: 'Burkina Faso' },
+      { code: 'bi', name: 'Burundi' },
+      { code: 'cv', name: 'Cabo Verde' },
+      { code: 'kh', name: 'Cambodia' },
+      { code: 'cm', name: 'Cameroon' },
+      { code: 'ca', name: 'Canada' },
+      { code: 'ky', name: 'Cayman Islands' },
+      { code: 'cf', name: 'Central African Republic' },
+      { code: 'td', name: 'Chad' },
+      { code: 'cl', name: 'Chile' },
+      { code: 'cn', name: 'China' },
+      { code: 'co', name: 'Colombia' },
+      { code: 'km', name: 'Comoros' },
+      { code: 'cd', name: 'Congo, Democratic Republic of the' },
+      { code: 'cg', name: 'Congo, Republic of the' },
+      { code: 'cr', name: 'Costa Rica' },
+      { code: 'hr', name: 'Croatia' },
+      { code: 'cu', name: 'Cuba' },
+      { code: 'cw', name: 'Curacao' },
+      { code: 'cy', name: 'Cyprus' },
+      { code: 'cz', name: 'Czech Republic' },
+      { code: 'dk', name: 'Denmark' },
+      { code: 'dj', name: 'Djibouti' },
+      { code: 'dm', name: 'Dominica' },
+      { code: 'do', name: 'Dominican Republic' },
+      { code: 'ec', name: 'Ecuador' },
+      { code: 'eg', name: 'Egypt' },
+      { code: 'sv', name: 'El Salvador' },
+      { code: 'gq', name: 'Equatorial Guinea' },
+      { code: 'er', name: 'Eritrea' },
+      { code: 'ee', name: 'Estonia' },
+      { code: 'et', name: 'Ethiopia' },
+      { code: 'fk', name: 'Falkland Islands (Malvinas)' },
+      { code: 'fo', name: 'Faroe Islands' },
+      { code: 'fj', name: 'Fiji' },
+      { code: 'fi', name: 'Finland' },
+      { code: 'fr', name: 'France' },
+      { code: 'gf', name: 'French Guiana' },
+      { code: 'pf', name: 'French Polynesia' },
+      { code: 'ga', name: 'Gabon' },
+      { code: 'gm', name: 'Gambia' },
+      { code: 'ge', name: 'Georgia' },
+      { code: 'de', name: 'Germany' },
+      { code: 'gh', name: 'Ghana' },
+      { code: 'gi', name: 'Gibraltar' },
+      { code: 'gr', name: 'Greece' },
+      { code: 'gl', name: 'Greenland' },
+      { code: 'gd', name: 'Grenada' },
+      { code: 'gp', name: 'Guadeloupe' },
+      { code: 'gu', name: 'Guam' },
+      { code: 'gt', name: 'Guatemala' },
+      { code: 'gn', name: 'Guinea' },
+      { code: 'gw', name: 'Guinea-Bissau' },
+      { code: 'gy', name: 'Guyana' },
+      { code: 'ht', name: 'Haiti' },
+      { code: 'hn', name: 'Honduras' },
+      { code: 'hk', name: 'Hong Kong' },
+      { code: 'hu', name: 'Hungary' },
+      { code: 'is', name: 'Iceland' },
+      { code: 'in', name: 'India' },
+      { code: 'id', name: 'Indonesia' },
+      { code: 'ir', name: 'Iran' },
+      { code: 'iq', name: 'Iraq' },
+      { code: 'ie', name: 'Ireland' },
+      { code: 'im', name: 'Isle of Man' },
+      { code: 'il', name: 'Israel' },
+      { code: 'it', name: 'Italy' },
+      { code: 'ci', name: 'Ivory Coast' },
+      { code: 'jm', name: 'Jamaica' },
+      { code: 'jp', name: 'Japan' },
+      { code: 'jo', name: 'Jordan' },
+      { code: 'kz', name: 'Kazakhstan' },
+      { code: 'ke', name: 'Kenya' },
+      { code: 'ki', name: 'Kiribati' },
+      { code: 'xk', name: 'Kosovo' },
+      { code: 'kw', name: 'Kuwait' },
+      { code: 'kg', name: 'Kyrgyzstan' },
+      { code: 'la', name: 'Laos' },
+      { code: 'lv', name: 'Latvia' },
+      { code: 'lb', name: 'Lebanon' },
+      { code: 'ls', name: 'Lesotho' },
+      { code: 'lr', name: 'Liberia' },
+      { code: 'ly', name: 'Libya' },
+      { code: 'li', name: 'Liechtenstein' },
+      { code: 'lt', name: 'Lithuania' },
+      { code: 'lu', name: 'Luxembourg' },
+      { code: 'mo', name: 'Macau' },
+      { code: 'mk', name: 'North Macedonia' },
+      { code: 'mg', name: 'Madagascar' },
+      { code: 'mw', name: 'Malawi' },
+      { code: 'my', name: 'Malaysia' },
+      { code: 'mv', name: 'Maldives' },
+      { code: 'ml', name: 'Mali' },
+      { code: 'mt', name: 'Malta' },
+      { code: 'mh', name: 'Marshall Islands' },
+      { code: 'mq', name: 'Martinique' },
+      { code: 'mr', name: 'Mauritania' },
+      { code: 'mu', name: 'Mauritius' },
+      { code: 'yt', name: 'Mayotte' },
+      { code: 'mx', name: 'Mexico' },
+      { code: 'fm', name: 'Micronesia' },
+      { code: 'md', name: 'Moldova' },
+      { code: 'mc', name: 'Monaco' },
+      { code: 'mn', name: 'Mongolia' },
+      { code: 'me', name: 'Montenegro' },
+      { code: 'ms', name: 'Montserrat' },
+      { code: 'ma', name: 'Morocco' },
+      { code: 'mz', name: 'Mozambique' },
+      { code: 'mm', name: 'Myanmar' },
+      { code: 'na', name: 'Namibia' },
+      { code: 'nr', name: 'Nauru' },
+      { code: 'np', name: 'Nepal' },
+      { code: 'nl', name: 'Netherlands' },
+      { code: 'nc', name: 'New Caledonia' },
+      { code: 'nz', name: 'New Zealand' },
+      { code: 'ni', name: 'Nicaragua' },
+      { code: 'ne', name: 'Niger' },
+      { code: 'ng', name: 'Nigeria' },
+      { code: 'nu', name: 'Niue' },
+      { code: 'nf', name: 'Norfolk Island' },
+      { code: 'kp', name: 'North Korea' },
+      { code: 'no', name: 'Norway' },
+      { code: 'om', name: 'Oman' },
+      { code: 'pk', name: 'Pakistan' },
+      { code: 'pw', name: 'Palau' },
+      { code: 'ps', name: 'Palestine' },
+      { code: 'pa', name: 'Panama' },
+      { code: 'pg', name: 'Papua New Guinea' },
+      { code: 'py', name: 'Paraguay' },
+      { code: 'pe', name: 'Peru' },
+      { code: 'ph', name: 'Philippines' },
+      { code: 'pl', name: 'Poland' },
+      { code: 'pt', name: 'Portugal' },
+      { code: 'pr', name: 'Puerto Rico' },
+      { code: 'qa', name: 'Qatar' },
+      { code: 're', name: 'Reunion' },
+      { code: 'ro', name: 'Romania' },
+      { code: 'ru', name: 'Russia' },
+      { code: 'rw', name: 'Rwanda' },
+      { code: 'bl', name: 'Saint Barthelemy' },
+      { code: 'sh', name: 'Saint Helena' },
+      { code: 'kn', name: 'Saint Kitts and Nevis' },
+      { code: 'lc', name: 'Saint Lucia' },
+      { code: 'mf', name: 'Saint Martin' },
+      { code: 'pm', name: 'Saint Pierre and Miquelon' },
+      { code: 'vc', name: 'Saint Vincent and the Grenadines' },
+      { code: 'ws', name: 'Samoa' },
+      { code: 'sm', name: 'San Marino' },
+      { code: 'st', name: 'Sao Tome and Principe' },
+      { code: 'sa', name: 'Saudi Arabia' },
+      { code: 'sn', name: 'Senegal' },
+      { code: 'rs', name: 'Serbia' },
+      { code: 'sc', name: 'Seychelles' },
+      { code: 'sl', name: 'Sierra Leone' },
+      { code: 'sg', name: 'Singapore' },
+      { code: 'sx', name: 'Sint Maarten' },
+      { code: 'sk', name: 'Slovakia' },
+      { code: 'si', name: 'Slovenia' },
+      { code: 'sb', name: 'Solomon Islands' },
+      { code: 'so', name: 'Somalia' },
+      { code: 'za', name: 'South Africa' },
+      { code: 'kr', name: 'South Korea' },
+      { code: 'ss', name: 'South Sudan' },
+      { code: 'es', name: 'Spain' },
+      { code: 'lk', name: 'Sri Lanka' },
+      { code: 'sd', name: 'Sudan' },
+      { code: 'sr', name: 'Suriname' },
+      { code: 'sj', name: 'Svalbard and Jan Mayen' },
+      { code: 'sz', name: 'Swaziland' },
+      { code: 'se', name: 'Sweden' },
+      { code: 'ch', name: 'Switzerland' },
+      { code: 'sy', name: 'Syria' },
+      { code: 'tw', name: 'Taiwan' },
+      { code: 'tj', name: 'Tajikistan' },
+      { code: 'tz', name: 'Tanzania' },
+      { code: 'th', name: 'Thailand' },
+      { code: 'tl', name: 'Timor-Leste' },
+      { code: 'tg', name: 'Togo' },
+      { code: 'tk', name: 'Tokelau' },
+      { code: 'to', name: 'Tonga' },
+      { code: 'tt', name: 'Trinidad and Tobago' },
+      { code: 'tn', name: 'Tunisia' },
+      { code: 'tr', name: 'Turkey' },
+      { code: 'tm', name: 'Turkmenistan' },
+      { code: 'tc', name: 'Turks and Caicos Islands' },
+      { code: 'tv', name: 'Tuvalu' },
+      { code: 'ug', name: 'Uganda' },
+      { code: 'ua', name: 'Ukraine' },
+      { code: 'ae', name: 'United Arab Emirates' },
+      { code: 'gb', name: 'United Kingdom' },
+      { code: 'us', name: 'United States' },
+      { code: 'uy', name: 'Uruguay' },
+      { code: 'uz', name: 'Uzbekistan' },
+      { code: 'vu', name: 'Vanuatu' },
+      { code: 'va', name: 'Vatican City' },
+      { code: 've', name: 'Venezuela' },
+      { code: 'vn', name: 'Vietnam' },
+      { code: 'wf', name: 'Wallis and Futuna' },
+      { code: 'eh', name: 'Western Sahara' },
+      { code: 'ye', name: 'Yemen' },
+      { code: 'zm', name: 'Zambia' },
+      { code: 'zw', name: 'Zimbabwe' }
+    ];
+
+    const otherCountriesSelect = $('#other-countries');
+    const taxCountriesSelect = $('#tax-other-countries');
+
+    countries.forEach(country => {
+      const optionHtml = `<option data-tokens="${country.name}" data-subtext="${country.name}" data-icon="flag-icon flag-icon-${country.code}">${country.name}</option>`;
+      otherCountriesSelect.append(optionHtml);
+      taxCountriesSelect.append(optionHtml);
+    });
+
+    $('.selectpicker').selectpicker('refresh');
+
+    // Toggle selection for buttons
+    $('.btn-country').click(function () {
+      const section = $(this).data('section');
+      $(`.btn-country[data-section="${section}"]`).removeClass('active');
+      $(`.btn-country[data-section="${section}"] .checkmark`).hide();
+      $(`.btn-country[data-section="${section}"] .crossmark`).show();
+
+      $(this).addClass('active');
+      $(this).find('.checkmark').show();
+      $(this).find('.crossmark').hide();
+    });
+
+    // Handle selection for dropdowns
+    $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+      const section = $(this).attr('data-section');
+      $(`.btn-country[data-section="${section}"]`).removeClass('active');
+      $(`.btn-country[data-section="${section}"] .checkmark`).hide();
+      $(`.btn-country[data-section="${section}"] .crossmark`).show();
+
+      if (isSelected) {
+        const selectedOption = $(this).find('option').eq(clickedIndex).text();
+        $(`.btn-country[data-country="${selectedOption}"][data-section="${section}"]`).addClass('active');
+        $(`.btn-country[data-country="${selectedOption}"][data-section="${section}"] .checkmark`).show();
+        $(`.btn-country[data-country="${selectedOption}"][data-section="${section}"] .crossmark`).hide();
+      }
+    });
+  });
+
+  function displaySelections() {
+    let selectedNationality = '';
+    $('.btn-country.active[data-section="nationality"]').each(function () {
+      selectedNationality += $(this).data('country') + ', ';
+    });
+
+    const otherCountry = $('#other-countries').val();
+    if (otherCountry) {
+      selectedNationality += otherCountry + ', ';
+    }
+    
+    $('#selected-nationality').text('Selected Nationality/Citizenship: ' + selectedNationality.slice(0, -2));
+
+    let selectedTaxResidency = '';
+    $('.btn-country.active[data-section="tax"]').each(function () {
+      selectedTaxResidency += $(this).data('country') + ', ';
+    });
+
+    const otherTaxCountry = $('#tax-other-countries').val();
+    if (otherTaxCountry) {
+      selectedTaxResidency += otherTaxCountry + ', ';
+    }
+    
+    $('#selected-tax-residency').text('Selected Tax Residency: ' + selectedTaxResidency.slice(0, -2));
+}
+
+</script>
+
+</body>
+</html>
